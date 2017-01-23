@@ -113,7 +113,6 @@ public class MainDialog extends JFrame {
     }
 
     private void onCancel() {
-        // add your code here if necessary
         dispose();
     }
 
