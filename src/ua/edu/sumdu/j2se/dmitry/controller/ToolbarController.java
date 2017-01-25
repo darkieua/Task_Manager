@@ -50,9 +50,8 @@ public class ToolbarController extends Controller {
         mainForm.getAddButon().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Add button pressed");
-
                 Task newTask = new Task("Title", new Date());
+                newTask.setActive(true);
                 EditController.throwEditDialog(newTask, 0);
                 model.add(newTask);
                 updateCombobox(mainForm.getTaskCombobox());

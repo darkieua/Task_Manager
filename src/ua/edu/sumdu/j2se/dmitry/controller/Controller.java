@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.tools.Tool;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,10 +43,21 @@ public class Controller {
     }
 
     public static void main(String[] args) {
-        TaskList a = new ArrayTaskList();
-        setModel(a);
+        TaskList tasklist = loadFromFile(FILE_NAME);
+        setModel(tasklist);
         createView();
         updateView();
+    }
+
+    private static TaskList loadFromFile(String filename) {
+        TaskList list = new ArrayTaskList();
+        try {
+            TaskIO.readBinary(list, new File(filename));
+        } catch (FileNotFoundException ex) {
+            throwError("Autosave file not found. First run?");
+        } finally {
+            return list;
+        }
     }
 
     private void initModel() {
