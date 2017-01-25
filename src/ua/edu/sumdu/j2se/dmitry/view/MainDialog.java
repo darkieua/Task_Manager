@@ -1,6 +1,5 @@
 package ua.edu.sumdu.j2se.dmitry.view;
 
-import org.jdatepicker.impl.UtilDateModel;
 import ua.edu.sumdu.j2se.dmitry.model.*;
 
 import javax.swing.*;
@@ -26,7 +25,6 @@ public class MainDialog extends JFrame {
     private JButton applyButton;
     private JButton loadButton;
     private JButton saveButton;
-    private UtilDateModel model1 = new UtilDateModel();
     private JScrollPane scroll;
 
     private TaskList model;
