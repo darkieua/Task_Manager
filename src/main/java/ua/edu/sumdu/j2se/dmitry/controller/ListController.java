@@ -1,6 +1,6 @@
 package ua.edu.sumdu.j2se.dmitry.controller;
 
-import ua.edu.sumdu.j2se.dmitry.view.MainDialog;
+import ua.edu.sumdu.j2se.dmitry.view.MainFrame;
 
 /**
  * Created by darkie on 22.01.17.
@@ -8,10 +8,15 @@ import ua.edu.sumdu.j2se.dmitry.view.MainDialog;
  * на вкладке List
  */
 public class ListController extends Controller {
+    private Controller controller;
+
+    public ListController(Controller controller) {
+        this.controller = controller;
+    }
 
     //Метод обновляет текстовую область согласно текущей модели
-    public static void updateTaskArea(MainDialog form) {
-        form.getTaskArea().setText(model.toString());
+    public void updateTaskArea(MainFrame form) {
+        form.getTaskArea().setText(controller.getModel().toString());
     }
 
 }

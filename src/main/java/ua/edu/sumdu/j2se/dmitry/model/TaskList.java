@@ -13,6 +13,15 @@ public abstract class TaskList extends Observable implements Iterable<Task>, Clo
     public abstract int size ();
     public abstract Task getTask (int index);
     public abstract Iterator<Task> iterator();
+    private boolean saved = true;
+
+    public boolean isSaved() {
+        return saved;
+    }
+
+    public void setSaved(boolean saved) {
+        this.saved = saved;
+    }
 
     public Observable observable() {
         return this;

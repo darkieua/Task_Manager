@@ -16,17 +16,22 @@ import java.util.Objects;
  * Created by darkie on 22.01.17.
  * Класс, отвечающий за поведение элементов в диалоговом окне изменения задания
  */
-public class EditController {
+public class EditController extends Controller {
 
     private static Task task;
+    private Controller controller;
+
+    public EditController (Controller controller) {
+        this.controller = controller;
+    }
 
     //Метод открывает новое диалоговое окно редактирования задачи (сама задача как аргумент метода)
-    protected static void throwEditDialog (Task taskarg, int index) {
+    protected void throwEditDialog (Task taskarg, int index) {
         if (taskarg == null) {
             taskarg = new Task ("Task title", new Date());
         }
         task = taskarg;
-        EditDialog edit = new EditDialog();
+        EditDialog edit = new EditDialog(this.controller);
         edit.setEditedTaskIndex(index);
         setEditDialog(taskarg, edit);
         edit.pack();
@@ -34,7 +39,7 @@ public class EditController {
     }
 
     //Метод задает соответствие между элементами формы редактирования и данными из объекта задачи
-    protected static void setEditDialog(Task task, EditDialog edit) {
+    protected void setEditDialog(Task task, EditDialog edit) {
         if (task != null) {
             edit.setEditedTask(task);
             edit.getTitleField().setText(task.getTitle());
@@ -97,19 +102,19 @@ public class EditController {
                                 );
                             } catch (ParseException e) {
                                 //throwError(e.toString());
-                                Controller.throwError("Date should be entered in format: dd-MM-yyyy HH:mm:ss.SSS");
+                                controller.throwError("Date should be entered in format: dd-MM-yyyy HH:mm:ss.SSS");
                             }
                         } else {
                             try {
                                 task.setTime(Controller.dateFormat.parse(edit.getDateField().getText()));
                             } catch (ParseException e) {
-                                Controller.throwError("Date should be entered in format: dd-MM-yyyy HH:mm:ss.SSS");
+                                controller.throwError("Date should be entered in format: dd-MM-yyyy HH:mm:ss.SSS");
                             }
                         }
                     }
 
                     //После изменения задачи, обновляется вид
-                    Controller.updateView();
+                    controller.updateView();
                 }
             });
     }
