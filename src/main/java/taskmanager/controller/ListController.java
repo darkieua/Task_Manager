@@ -1,6 +1,6 @@
-package ua.edu.sumdu.j2se.dmitry.controller;
+package main.taskmanager.controller;
 
-import ua.edu.sumdu.j2se.dmitry.view.MainFrame;
+import main.taskmanager.view.MainFrame;
 
 /**
  * Created by darkie on 22.01.17.

@@ -1,4 +1,4 @@
-package ua.edu.sumdu.j2se.dmitry.model;
+package main.taskmanager.model;
 
 import java.io.*;
 import java.nio.ByteBuffer;

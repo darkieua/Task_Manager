@@ -1,7 +1,7 @@
-package ua.edu.sumdu.j2se.dmitry.controller;
+package main.taskmanager.controller;
 
-import ua.edu.sumdu.j2se.dmitry.model.Task;
-import ua.edu.sumdu.j2se.dmitry.view.EditDialog;
+import main.taskmanager.model.Task;
+import main.taskmanager.view.EditDialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

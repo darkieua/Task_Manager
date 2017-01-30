@@ -1,7 +1,7 @@
-package ua.edu.sumdu.j2se.dmitry.controller;
+package main.taskmanager.controller;
 
-import ua.edu.sumdu.j2se.dmitry.model.Task;
-import ua.edu.sumdu.j2se.dmitry.model.TaskIO;
+import main.taskmanager.model.Task;
+import main.taskmanager.model.TaskIO;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

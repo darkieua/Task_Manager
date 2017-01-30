@@ -1,4 +1,4 @@
-package ua.edu.sumdu.j2se.dmitry.model;
+package main.taskmanager.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

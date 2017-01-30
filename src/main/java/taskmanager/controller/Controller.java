@@ -1,7 +1,7 @@
-package ua.edu.sumdu.j2se.dmitry.controller;
+package main.taskmanager.controller;
 
-import ua.edu.sumdu.j2se.dmitry.model.*;
-import ua.edu.sumdu.j2se.dmitry.view.*;
+import main.taskmanager.model.*;
+import main.taskmanager.view.*;
 
 
 import java.awt.event.WindowAdapter;

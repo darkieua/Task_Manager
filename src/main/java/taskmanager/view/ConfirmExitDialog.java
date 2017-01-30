@@ -1,9 +1,9 @@
-package ua.edu.sumdu.j2se.dmitry.view;
+package main.taskmanager.view;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import ua.edu.sumdu.j2se.dmitry.controller.Controller;
+import main.taskmanager.controller.Controller;
 
 import javax.swing.*;
 import java.awt.*;

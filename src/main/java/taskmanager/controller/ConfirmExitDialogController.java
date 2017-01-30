@@ -1,6 +1,6 @@
-package ua.edu.sumdu.j2se.dmitry.controller;
+package main.taskmanager.controller;
 
-import ua.edu.sumdu.j2se.dmitry.view.ConfirmExitDialog;
+import main.taskmanager.view.ConfirmExitDialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

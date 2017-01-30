@@ -1,8 +1,8 @@
-package ua.edu.sumdu.j2se.dmitry.controller;
+package main.taskmanager.controller;
 
-import ua.edu.sumdu.j2se.dmitry.model.Task;
-import ua.edu.sumdu.j2se.dmitry.model.TaskList;
-import ua.edu.sumdu.j2se.dmitry.view.MessageDialog;
+import main.taskmanager.model.Task;
+import main.taskmanager.model.TaskList;
+import main.taskmanager.view.MessageDialog;
 
 import java.util.ArrayList;
 import java.util.Date;

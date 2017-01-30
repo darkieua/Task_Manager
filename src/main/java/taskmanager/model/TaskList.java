@@ -1,4 +1,4 @@
-package ua.edu.sumdu.j2se.dmitry.model;
+package main.taskmanager.model;
 
 import java.util.Date;
 import java.util.Iterator;

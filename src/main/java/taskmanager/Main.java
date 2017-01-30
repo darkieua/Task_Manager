@@ -1,8 +1,8 @@
-package ua.edu.sumdu.j2se.dmitry;
+package main.taskmanager;
 
-import ua.edu.sumdu.j2se.dmitry.controller.Controller;
-import ua.edu.sumdu.j2se.dmitry.controller.Notifier;
-import ua.edu.sumdu.j2se.dmitry.model.TaskList;
+import main.taskmanager.controller.Controller;
+import main.taskmanager.controller.Notifier;
+import main.taskmanager.model.TaskList;
 
 /**
  * Created by darkie on 30.01.17.
