@@ -1,7 +1,8 @@
-package main.taskmanager.controller;
+package taskmanager.controller;
 
-import main.taskmanager.model.Task;
-import main.taskmanager.model.TaskIO;
+import org.apache.log4j.Logger;
+import taskmanager.model.Task;
+import taskmanager.model.TaskIO;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,6 +17,8 @@ import java.util.Date;
  * которая находится на форме вне зависимости от выбраной вкладки
  */
 public class ToolbarController extends Controller {
+
+
 
     private Controller controller;
     private EditController edit;
@@ -32,8 +35,10 @@ public class ToolbarController extends Controller {
                 if (controller.getModel().size() > 0) {
                     edit.throwEditDialog(controller.getModel().getTask(controller.getMainForm().getTaskCombobox().getSelectedIndex()), controller.getMainForm().getTaskCombobox().getSelectedIndex());
                     controller.getModel().setSaved(false);
+                    logger.info("Task \"" + controller.getModel().getTask(controller.getMainForm().getTaskCombobox().getSelectedIndex()).toString() + "\" is being edited");
                 }
                 else {
+                    logger.error("Tried to edit a task from empty task list");
                     throwError("Task list is empty");
                 }
             }
@@ -45,12 +50,14 @@ public class ToolbarController extends Controller {
         controller.getMainForm().getRemoveButton().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (controller.getModel().size() > 0) {
+                    logger.info("Task \"" + controller.getModel().getTask(controller.getMainForm().getTaskCombobox().getSelectedIndex()).toString() + "\" was removed");
                     controller.getModel().remove(controller.getModel().getTask(controller.getMainForm().getTaskCombobox().getSelectedIndex()));
                     controller.getModel().setSaved(false);
                     updateCombobox(controller.getMainForm().getTaskCombobox());
                     controller.updateView();
                 }
                 else {
+                    logger.error("Tried to remove task from empty task list");
                     throwError("Cannot remove, task list is empty already");
                 }
             }
@@ -68,7 +75,6 @@ public class ToolbarController extends Controller {
                 controller.getModel().setSaved(false);
                 updateCombobox(controller.getMainForm().getTaskCombobox());
                 controller.updateView();
-
             }
         });
     }
@@ -81,6 +87,7 @@ public class ToolbarController extends Controller {
                 //TaskIO.readBinary(controller.getModel(), new File(controller.getFileName()));
                 controller.getModel().setSaved(true);
                 controller.updateView();
+                logger.info("Task list is being loaded from file");
             }
         });
     }
@@ -95,6 +102,7 @@ public class ToolbarController extends Controller {
     }
 
     protected void saveButtonHandler() {
+        logger.info("Task list is being saved to file");
         TaskIO.writeBinary(controller.getModel(), new File(controller.getFileName()));
         controller.getModel().setSaved(true);
     }

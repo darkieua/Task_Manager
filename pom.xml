@@ -8,8 +8,16 @@
     <artifactId>task-manager</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+
     <!-- Intellij IDEA UI Designer -->
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/log4j/log4j -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>forms_rt</artifactId>
@@ -26,7 +34,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>main.taskmanager.Main</mainClass>
+                            <mainClass>taskmanager.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -37,7 +45,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>main.taskmanager.Main</mainClass>
+                            <mainClass>taskmanager.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

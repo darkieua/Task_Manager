@@ -1,7 +1,7 @@
-package main.taskmanager.controller;
+package taskmanager.controller;
 
-import main.taskmanager.model.Task;
-import main.taskmanager.model.Tasks;
+import taskmanager.model.Task;
+import taskmanager.model.Tasks;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,22 +30,18 @@ public class CalendarController extends Controller {
                     controller.dateFormat.parse(controller.getMainForm().getFromField().getText());
                 } catch (ParseException e) {
                     controller.throwError("Wrong date input");
+                    logger.error("Wrong date input");
                 } finally {
                     updateCalendar();
                 }
             }
         });
-        updateCalendar();
     }
 
     protected void updateCalendar() {
 
         String calendarStr = new String();
         try {
-            if (controller.getModel() == null) {
-                System.out.println("controller = null");
-            }
-
             SortedMap<Date, Set<Task>> map = Tasks.calendar(
                     controller.getModel(),
                     controller.dateFormat.parse(controller.getMainForm().getFromField().getText()),
@@ -62,7 +58,8 @@ public class CalendarController extends Controller {
 
             controller.getMainForm().getCalendarArea().setText(calendarStr);
         } catch (ParseException e) {
-            controller.throwError("Wrong input");
+            controller.throwError("Wrong date input");
+            logger.error("Wrong date input");
         }
     }
 }

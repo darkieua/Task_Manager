@@ -1,6 +1,6 @@
-package main.taskmanager.controller;
+package taskmanager.controller;
 
-import main.taskmanager.view.MainFrame;
+import taskmanager.view.MainFrame;
 
 /**
  * Created by darkie on 22.01.17.

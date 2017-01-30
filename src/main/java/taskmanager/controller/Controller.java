@@ -1,7 +1,8 @@
-package main.taskmanager.controller;
+package taskmanager.controller;
 
-import main.taskmanager.model.*;
-import main.taskmanager.view.*;
+import org.apache.log4j.Logger;
+import taskmanager.model.*;
+import taskmanager.view.*;
 
 
 import java.awt.event.WindowAdapter;
@@ -16,6 +17,7 @@ import java.util.Calendar;
  */
 
 public class Controller {
+    protected static Logger logger = Logger.getLogger(Controller.class);
     private static String FILE_NAME = "list.bin";
     private MainFrame mainForm;
     private TaskList model;
@@ -49,7 +51,9 @@ public class Controller {
             model.setSaved(true);
         } catch (FileNotFoundException ex) {
             throwError("Autosave file not found. First run?");
+            logger.error("Autosave file not found. First run?");
         } finally {
+            logger.info("Task list is being autoloaded from file");
             return list;
         }
     }
@@ -107,7 +111,6 @@ public class Controller {
                 }
                 else {
                     confirmExit.throwConfirmExitDialog();
-                    System.out.println("Tasklist is not saved");
                 }
             }
         });

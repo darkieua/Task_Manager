@@ -1,4 +1,4 @@
-package main.taskmanager.model;
+package taskmanager.model;
 
 import java.util.*;
 

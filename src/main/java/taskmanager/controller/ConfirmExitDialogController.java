@@ -1,6 +1,6 @@
-package main.taskmanager.controller;
+package taskmanager.controller;
 
-import main.taskmanager.view.ConfirmExitDialog;
+import taskmanager.view.ConfirmExitDialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,6 +32,7 @@ public class ConfirmExitDialogController extends Controller {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 toolbar.saveButtonHandler();
+                logger.info("Application closed with saving");
                 controller.closeApplication();
             }
         });
@@ -41,6 +42,7 @@ public class ConfirmExitDialogController extends Controller {
         dialog.getDonTSaveButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                logger.info("Application closed without saving");
                 controller.closeApplication();
             }
         });
