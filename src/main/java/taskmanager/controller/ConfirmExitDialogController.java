@@ -1,6 +1,6 @@
-package main.taskmanager.controller;
+package taskmanager.controller;
 
-import main.taskmanager.view.ConfirmExitDialog;
+import taskmanager.view.ConfirmExitDialog;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

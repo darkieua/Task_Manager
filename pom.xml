@@ -26,7 +26,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>main.taskmanager.Main</mainClass>
+                            <mainClass>taskmanager.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -37,7 +37,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>main.taskmanager.Main</mainClass>
+                            <mainClass>taskmanager.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

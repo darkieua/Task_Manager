@@ -1,7 +1,7 @@
-package main.taskmanager.controller;
+package taskmanager.controller;
 
-import main.taskmanager.model.*;
-import main.taskmanager.view.*;
+import taskmanager.model.*;
+import taskmanager.view.*;
 
 
 import java.awt.event.WindowAdapter;

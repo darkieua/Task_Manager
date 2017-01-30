@@ -1,9 +1,9 @@
-package main.taskmanager.view;
+package taskmanager.view;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import main.taskmanager.model.*;
+import taskmanager.model.*;
 
 import javax.swing.*;
 import java.awt.*;

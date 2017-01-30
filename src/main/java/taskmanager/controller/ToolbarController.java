@@ -1,7 +1,7 @@
-package main.taskmanager.controller;
+package taskmanager.controller;
 
-import main.taskmanager.model.Task;
-import main.taskmanager.model.TaskIO;
+import taskmanager.model.Task;
+import taskmanager.model.TaskIO;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;

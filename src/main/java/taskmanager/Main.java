@@ -1,8 +1,7 @@
-package main.taskmanager;
+package taskmanager;
 
-import main.taskmanager.controller.Controller;
-import main.taskmanager.controller.Notifier;
-import main.taskmanager.model.TaskList;
+import taskmanager.controller.Controller;
+import taskmanager.controller.Notifier;
 
 /**
  * Created by darkie on 30.01.17.

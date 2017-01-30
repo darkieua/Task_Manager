@@ -1,8 +1,8 @@
-package main.taskmanager.controller;
+package taskmanager.controller;
 
-import main.taskmanager.model.Task;
-import main.taskmanager.model.TaskList;
-import main.taskmanager.view.MessageDialog;
+import taskmanager.model.Task;
+import taskmanager.model.TaskList;
+import taskmanager.view.MessageDialog;
 
 import java.util.ArrayList;
 import java.util.Date;

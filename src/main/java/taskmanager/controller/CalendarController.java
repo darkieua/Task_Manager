@@ -1,7 +1,7 @@
-package main.taskmanager.controller;
+package taskmanager.controller;
 
-import main.taskmanager.model.Task;
-import main.taskmanager.model.Tasks;
+import taskmanager.model.Task;
+import taskmanager.model.Tasks;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
