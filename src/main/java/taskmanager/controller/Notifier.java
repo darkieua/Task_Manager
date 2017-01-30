@@ -44,11 +44,10 @@ public class Notifier extends Controller implements Runnable {
         if (task.isActive()) {
             if (!isFinished(task)) {
                 timeleft = task.nextTimeAfter(new Date()).getTime() - System.currentTimeMillis();
-                System.out.println("Timeleft: " + timeleft + ", " + (int)(Math.round( timeleft / 1000.0) * 1000));
             }
             else {
+                logger.info( "Task \"" + task.toString() + "\" should be executed!");
                 controller.throwMessage("\"" + task.getTitle() + "\" notification", "Task \"" + task.getTitle() + "\" should be executed!");
-                System.out.println("Task " + task.getTitle() + " is finished");
             }
         }
     }
@@ -56,6 +55,7 @@ public class Notifier extends Controller implements Runnable {
     private boolean isFinished(Task task) {
             if ((System.currentTimeMillis() > task.getTime().getTime() && !task.isRepeated()) || (System.currentTimeMillis() > task.getEndTime().getTime() && task.isRepeated())) {
                 System.out.println("Task " + task.getTitle() + " is finished, making unactive");
+                logger.info("Task \"" + task.toString() + "\" is finished, making unactive");
                 task.setActive(false);
                 controller.updateView();
                 return true;

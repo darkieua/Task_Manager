@@ -90,7 +90,6 @@ public class EditController extends Controller {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
                     if (task != null) {
-
                         task.setTitle(edit.getTitleField().getText());
                         task.setActive(edit.getActiveCheckBox().isSelected());
                         if (edit.getRepeatedCheckBox().isSelected()) {
@@ -103,16 +102,17 @@ public class EditController extends Controller {
                             } catch (ParseException e) {
                                 //throwError(e.toString());
                                 controller.throwError("Date should be entered in format: dd-MM-yyyy HH:mm:ss.SSS");
+                                logger.error("Date should be entered in format: dd-MM-yyyy HH:mm:ss.SSS");
                             }
                         } else {
                             try {
                                 task.setTime(Controller.dateFormat.parse(edit.getDateField().getText()));
                             } catch (ParseException e) {
-                                controller.throwError("Date should be entered in format: dd-MM-yyyy HH:mm:ss.SSS");
+                                logger.error("Date should be entered in format: dd-MM-yyyy HH:mm:ss.SSS");
                             }
                         }
                     }
-
+                    logger.info("Task \"" + task.toString() + "\" saved");
                     //После изменения задачи, обновляется вид
                     controller.updateView();
                 }
