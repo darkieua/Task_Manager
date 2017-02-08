@@ -50,8 +50,20 @@ public class Controller {
             TaskIO.readBinary(list, new File(filename));
             model.setSaved(true);
         } catch (FileNotFoundException ex) {
-            throwError("Autosave file not found. First run?");
-            logger.error("Autosave file not found. First run?");
+            logger.error("File not found");
+        } finally {
+            logger.info("Task list is being autoloaded from file");
+            return list;
+        }
+    }
+
+    public TaskList loadFromFile(File file) {
+        TaskList list = new ArrayTaskList();
+        try {
+            TaskIO.readBinary(list, file);
+            model.setSaved(true);
+        } catch (FileNotFoundException ex) {
+            logger.error("File not found");
         } finally {
             logger.info("Task list is being autoloaded from file");
             return list;

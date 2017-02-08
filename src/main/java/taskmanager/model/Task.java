@@ -71,7 +71,7 @@ public class Task implements Cloneable{
     }
 
     public long getRepeatInterval () {
-        return repeated ? this.interval : null;
+        return repeated ? this.interval : -1;
     }
 
     public void setTime (Date start, Date end, int interval) {

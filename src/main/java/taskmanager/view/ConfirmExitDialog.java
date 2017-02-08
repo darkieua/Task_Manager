@@ -19,9 +19,6 @@ public class ConfirmExitDialog extends JDialog {
     private int WINDOW_HEIGHT = 100;
     private int WINDOW_WEIGHT = 550;
 
-    public void test() {
-    }
-
 
     public JButton getButtonCancel() {
         return buttonCancel;

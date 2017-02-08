@@ -1,10 +1,12 @@
 package taskmanager.controller;
 
 import org.apache.log4j.Logger;
+import taskmanager.Main;
 import taskmanager.model.Task;
 import taskmanager.model.TaskIO;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -83,11 +85,26 @@ public class ToolbarController extends Controller {
         controller.getMainForm().getLoadButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                /*
                 controller.setModel(controller.loadFromFile(controller.getFileName()));
                 //TaskIO.readBinary(controller.getModel(), new File(controller.getFileName()));
                 controller.getModel().setSaved(true);
                 controller.updateView();
                 logger.info("Task list is being loaded from file");
+                */
+                String defaultPath = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath(); //Path of Main class, used as a default in filechooser
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("(*.bin) Binary task list files", "bin");
+                final JFileChooser fileChooser = new JFileChooser(defaultPath);
+                fileChooser.setFileFilter(filter);
+                int returnVal = fileChooser.showOpenDialog(controller.getMainForm());
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fileChooser.getSelectedFile();
+                    controller.setModel(controller.loadFromFile(file));
+                    controller.getModel().setSaved(true);
+                    controller.updateView();
+                    logger.info("Task list is being loaded from file: " + fileChooser.getSelectedFile().getAbsolutePath());
+                }
             }
         });
     }
