@@ -3,7 +3,7 @@ package taskmanager.view;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import taskmanager.controller.Controller;
+import taskmanager.controller.MainController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,11 +19,11 @@ public class ErrorDialog extends JDialog {
     private JLabel ErrorTitle;
     private JLabel ErrorLabel;
 
-    private Controller controller;
+    private MainController mainController;
 
-    public ErrorDialog(Controller controller) {
-        super(controller.getMainForm(), "Error");
-        this.controller = controller;
+    public ErrorDialog(MainController mainController) {
+        super(mainController.getMainForm(), "Error");
+        this.mainController = mainController;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);

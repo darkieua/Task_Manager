@@ -6,12 +6,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static taskmanager.controller.MainController.dateFormat;
+
 /**
  * Created by DarkST on 18.12.2016.
  */
 
 public class TaskIO {
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     public static void write (TaskList tasks, Writer out) {
         try {

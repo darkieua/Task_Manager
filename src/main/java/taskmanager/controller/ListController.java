@@ -7,16 +7,16 @@ import taskmanager.view.MainFrame;
  * Класс, отвечающий за поведение элементов, которые находятся
  * на вкладке List
  */
-public class ListController extends Controller {
-    private Controller controller;
+public class ListController extends MainController {
+    private MainController mainController;
 
-    public ListController(Controller controller) {
-        this.controller = controller;
+    public ListController(MainController mainController) {
+        this.mainController = mainController;
     }
 
     //Метод обновляет текстовую область согласно текущей модели
     public void updateTaskArea(MainFrame form) {
-        form.getTaskArea().setText(controller.getModel().toString());
+        form.getTaskArea().setText(mainController.getModel().toString());
     }
 
 }

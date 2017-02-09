@@ -3,22 +3,16 @@ package taskmanager.view;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import taskmanager.controller.Controller;
+import taskmanager.controller.MainController;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ConfirmExitDialog extends JDialog {
+public class ConfirmExitDialog extends Dialog {
     private JPanel contentPane;
     private JButton buttonCancel;
     private JButton donTSaveButton;
     private JButton saveButton;
-
-    private Controller controller;
-
-    private int WINDOW_HEIGHT = 100;
-    private int WINDOW_WEIGHT = 550;
-
 
     public JButton getButtonCancel() {
         return buttonCancel;
@@ -32,9 +26,11 @@ public class ConfirmExitDialog extends JDialog {
         return donTSaveButton;
     }
 
-    public ConfirmExitDialog(Controller controller) {
-        super(controller.getMainForm(), "Task list is not saved");
-        this.controller = controller;
+    public ConfirmExitDialog(MainController mainController) {
+        super(mainController.getMainForm(), "Task list is not saved");
+        WINDOW_WEIGHT = 550;
+        WINDOW_HEIGHT = 100;
+        this.mainController = mainController;
         setModal(true);
         setContentPane(contentPane);
         setResizable(false);

@@ -1,5 +1,7 @@
 package taskmanager.model;
 
+import taskmanager.controller.MainController;
+
 import java.util.Date;
 
 /**
@@ -164,10 +166,10 @@ public class Task implements Cloneable{
     public String toString() {
         String result;
         if (isRepeated()) {
-            result = "\"" + getTitle() + "\" from " + getStartTime() + " to " + getEndTime() + " in " + getRepeatInterval() + (isActive() ? " active" : "");
+            result = "\"" + getTitle() + "\" from [" + MainController.dateFormat.format(getStartTime()) + "] to [" + MainController.dateFormat.format(getEndTime()) + "] in " + getRepeatInterval() + (isActive() ? " active" : "");
         }
         else
-            result = "\"" + getTitle() + "\" at " + getTime() + (isActive() ? " active" : "");
+            result = "\"" + getTitle() + "\" at [" + MainController.dateFormat.format(getTime()) + (isActive() ? "] active" : "]");
         return result;
     }
 }

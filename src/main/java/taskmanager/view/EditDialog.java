@@ -1,9 +1,10 @@
 package taskmanager.view;
 
+import com.github.lgooddatepicker.components.DateTimePicker;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import taskmanager.controller.Controller;
+import taskmanager.controller.MainController;
 import taskmanager.model.Task;
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class EditDialog extends Dialog {
-    private Controller controller;
+    private MainController mainController;
 
     private int WINDOW_HEIGHT = 250;
     private int WINDOW_WEIGHT = 400;
@@ -33,6 +34,9 @@ public class EditDialog extends Dialog {
     private JPanel checkBoxes;
     private JPanel Fields;
     private JLabel titleLabel;
+    private DateTimePicker dateDatepicker;
+    private DateTimePicker startDatepicker;
+    private DateTimePicker endDatepicker;
 
     private Task editedTask;
     private int editedTaskIndex;
@@ -50,30 +54,25 @@ public class EditDialog extends Dialog {
         this.editedTaskIndex = editedTaskIndex;
     }
 
-    public int getEditedTaskIndex() {
-        return editedTaskIndex;
-    }
-
     public void setFormRepeated(boolean repeated) {
         if (repeated) {
             //Для избегания вероятной ошибки при пустых полях с датами начала, конца и интервала, в эти поля копируется значения из формы с датой исполнения,
             //а в поле интервала копируется дефолтное значение - 1000
-            startField.setText(dateField.getText());
-            endField.setText(dateField.getText());
             intervalField.setText("1000");
 
             //Поля с датами начала, конца и интервала делаются доступными для редактирования, поле с датой исполнения - недоступным
-            startField.setEditable(true);
-            endField.setEditable(true);
+            startDatepicker.setEnabled(true);
+            endDatepicker.setEnabled(true);
             intervalField.setEditable(true);
-            dateField.setEditable(false);
+            dateDatepicker.setEnabled(false);
         } else {
             //Поля с датой исполнения доступное для редактирования, поля с датами начала, конца и интервала - нет
-            startField.setEditable(false);
-            endField.setEditable(false);
+            startDatepicker.setEnabled(false);
+            endDatepicker.setEnabled(false);
             intervalField.setEditable(false);
-            dateField.setEditable(true);
+            dateDatepicker.setEnabled(true);
         }
+
     }
 
 
@@ -113,27 +112,27 @@ public class EditDialog extends Dialog {
         return repeatedCheckBox;
     }
 
-    public EditDialog(Controller controller) {
-        super(controller.getMainForm(), "Edit task");
-        this.controller = controller;
+    public DateTimePicker getDateDatepicker() {
+        return dateDatepicker;
+    }
+
+    public DateTimePicker getStartDatepicker() {
+        return startDatepicker;
+    }
+
+    public DateTimePicker getEndDatepicker() {
+        return endDatepicker;
+    }
+
+    public EditDialog(MainController mainController) {
+        super(mainController.getMainForm(), "Edit task");
+        this.mainController = mainController;
         setModal(true);
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonSave);
         setResizable(false);
         setPreferredSize(new Dimension(WINDOW_WEIGHT, WINDOW_HEIGHT));
         setLocationRelativeTo(null);
-
-        buttonSave.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
-
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -150,7 +149,6 @@ public class EditDialog extends Dialog {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
-
 
 
     {
@@ -189,8 +187,6 @@ public class EditDialog extends Dialog {
         contentPane.add(Fields, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         titleField = new JTextField();
         Fields.add(titleField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        dateField = new JTextField();
-        Fields.add(dateField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         dateLabel = new JLabel();
         dateLabel.setText("Date");
         Fields.add(dateLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -203,15 +199,17 @@ public class EditDialog extends Dialog {
         intervalLabel = new JLabel();
         intervalLabel.setText("Interval");
         Fields.add(intervalLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        startField = new JTextField();
-        Fields.add(startField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        endField = new JTextField();
-        Fields.add(endField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         intervalField = new JTextField();
         Fields.add(intervalField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         titleLabel = new JLabel();
         titleLabel.setText("Title");
         Fields.add(titleLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        dateDatepicker = new DateTimePicker();
+        Fields.add(dateDatepicker, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        startDatepicker = new DateTimePicker();
+        Fields.add(startDatepicker, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        endDatepicker = new DateTimePicker();
+        Fields.add(endDatepicker, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         checkBoxes = new JPanel();
         checkBoxes.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(checkBoxes, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

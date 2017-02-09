@@ -1,6 +1,5 @@
 package taskmanager.controller;
 
-import org.apache.log4j.Logger;
 import taskmanager.Main;
 import taskmanager.model.Task;
 import taskmanager.model.TaskIO;
@@ -10,7 +9,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Date;
 
 /**
@@ -18,26 +16,26 @@ import java.util.Date;
  * Класс, отвечающий за поведение элементов панели инструментов (выпадающий список задач и кнопки),
  * которая находится на форме вне зависимости от выбраной вкладки
  */
-public class ToolbarController extends Controller {
+public class ToolbarController extends MainController {
 
 
 
-    private Controller controller;
+    private MainController mainController;
     private EditController edit;
 
-    public ToolbarController (Controller controller) {
-        this.controller = controller;
-        this.edit = new EditController(controller);
+    public ToolbarController (MainController mainController) {
+        this.mainController = mainController;
+        this.edit = new EditController(mainController);
     }
 
     //Метод вешает слушатель на кнопку редактирования
     protected void setEditButtonListener() {
-        controller.getMainForm().getButtonEdit().addActionListener(new ActionListener() {
+        mainController.getMainForm().getButtonEdit().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (controller.getModel().size() > 0) {
-                    edit.throwEditDialog(controller.getModel().getTask(controller.getMainForm().getTaskCombobox().getSelectedIndex()), controller.getMainForm().getTaskCombobox().getSelectedIndex());
-                    controller.getModel().setSaved(false);
-                    logger.info("Task \"" + controller.getModel().getTask(controller.getMainForm().getTaskCombobox().getSelectedIndex()).toString() + "\" is being edited");
+                if (mainController.getModel().size() > 0) {
+                    edit.throwEditDialog(mainController.getModel().getTask(mainController.getMainForm().getTaskCombobox().getSelectedIndex()), mainController.getMainForm().getTaskCombobox().getSelectedIndex());
+                    mainController.getModel().setSaved(false);
+                    logger.info("Task \"" + mainController.getModel().getTask(mainController.getMainForm().getTaskCombobox().getSelectedIndex()).toString() + "\" is being edited");
                 }
                 else {
                     logger.error("Tried to edit a task from empty task list");
@@ -49,14 +47,14 @@ public class ToolbarController extends Controller {
 
     //Метод вешает слушатель на кнопку удаления задачи
     protected void setRemoveButtonListener() {
-        controller.getMainForm().getRemoveButton().addActionListener(new ActionListener() {
+        mainController.getMainForm().getRemoveButton().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (controller.getModel().size() > 0) {
-                    logger.info("Task \"" + controller.getModel().getTask(controller.getMainForm().getTaskCombobox().getSelectedIndex()).toString() + "\" was removed");
-                    controller.getModel().remove(controller.getModel().getTask(controller.getMainForm().getTaskCombobox().getSelectedIndex()));
-                    controller.getModel().setSaved(false);
-                    updateCombobox(controller.getMainForm().getTaskCombobox());
-                    controller.updateView();
+                if (mainController.getModel().size() > 0) {
+                    logger.info("Task \"" + mainController.getModel().getTask(mainController.getMainForm().getTaskCombobox().getSelectedIndex()).toString() + "\" was removed");
+                    mainController.getModel().remove(mainController.getModel().getTask(mainController.getMainForm().getTaskCombobox().getSelectedIndex()));
+                    mainController.getModel().setSaved(false);
+                    updateCombobox(mainController.getMainForm().getTaskCombobox());
+                    mainController.updateView();
                 }
                 else {
                     logger.error("Tried to remove task from empty task list");
@@ -67,42 +65,31 @@ public class ToolbarController extends Controller {
     }
 
     protected void setAddButtonListener() {
-        controller.getMainForm().getAddButon().addActionListener(new ActionListener() {
+        mainController.getMainForm().getAddButon().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Task newTask = new Task("Title", new Date());
                 newTask.setActive(true);
                 edit.throwEditDialog(newTask, 0);
-                controller.getModel().add(newTask);
-                controller.getModel().setSaved(false);
-                updateCombobox(controller.getMainForm().getTaskCombobox());
-                controller.updateView();
             }
         });
     }
 
     protected void setLoadButtonListener() {
-        controller.getMainForm().getLoadButton().addActionListener(new ActionListener() {
+        mainController.getMainForm().getLoadButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                /*
-                controller.setModel(controller.loadFromFile(controller.getFileName()));
-                //TaskIO.readBinary(controller.getModel(), new File(controller.getFileName()));
-                controller.getModel().setSaved(true);
-                controller.updateView();
-                logger.info("Task list is being loaded from file");
-                */
                 String defaultPath = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath(); //Path of Main class, used as a default in filechooser
                 FileNameExtensionFilter filter = new FileNameExtensionFilter("(*.bin) Binary task list files", "bin");
                 final JFileChooser fileChooser = new JFileChooser(defaultPath);
                 fileChooser.setFileFilter(filter);
-                int returnVal = fileChooser.showOpenDialog(controller.getMainForm());
+                int returnVal = fileChooser.showOpenDialog(mainController.getMainForm());
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fileChooser.getSelectedFile();
-                    controller.setModel(controller.loadFromFile(file));
-                    controller.getModel().setSaved(true);
-                    controller.updateView();
+                    mainController.setModel(mainController.loadFromFile(file));
+                    mainController.getModel().setSaved(true);
+                    mainController.updateView();
                     logger.info("Task list is being loaded from file: " + fileChooser.getSelectedFile().getAbsolutePath());
                 }
             }
@@ -110,7 +97,7 @@ public class ToolbarController extends Controller {
     }
 
     protected void setSaveButtonListener() {
-        controller.getMainForm().getSaveButton().addActionListener(new ActionListener() {
+        mainController.getMainForm().getSaveButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 saveButtonHandler();
@@ -120,18 +107,18 @@ public class ToolbarController extends Controller {
 
     protected void saveButtonHandler() {
         logger.info("Task list is being saved to file");
-        TaskIO.writeBinary(controller.getModel(), new File(controller.getFileName()));
-        controller.getModel().setSaved(true);
+        TaskIO.writeBinary(mainController.getModel(), new File(mainController.getFileName()));
+        mainController.getModel().setSaved(true);
     }
 
     //Метод обновляет выпадающий список согласно текущей модели
     protected void updateCombobox(JComboBox combobox) {
         combobox.removeAllItems();
-        if (controller.getModel().size() == 0) {
+        if (mainController.getModel().size() == 0) {
             combobox.addItem("No tasks founded");
         }
         else {
-            for (Task t : controller.getModel()) {
+            for (Task t : mainController.getModel()) {
                 combobox.addItem(t.toString());
             }
         }

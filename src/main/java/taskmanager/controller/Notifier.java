@@ -1,17 +1,14 @@
 package taskmanager.controller;
 
 import taskmanager.model.Task;
-import taskmanager.model.TaskList;
-import taskmanager.view.MessageDialog;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 /**
  * Created by darkie on 29.01.17.
  */
-public class Notifier extends Controller implements Runnable {
-    private Controller controller;
+public class Notifier extends MainController implements Runnable {
+    private MainController mainController;
 
     private static long checkInterval = 1000;
     private static boolean stop = false;
@@ -19,15 +16,15 @@ public class Notifier extends Controller implements Runnable {
     private int MIN_CHECK = 1000; //Минимальное время, за которое возможна проверка
     private int MIN_NOTIFY = 1000; //Минимальное время, за которое возможно оповещение
 
-    public Notifier (Controller controller) {
-        this.controller = controller;
+    public Notifier (MainController mainController) {
+        this.mainController = mainController;
     }
 
     @Override
     public synchronized void run() {
         if (checkInterval >= MIN_CHECK)
         while (!stop) {
-            for (Task task : controller.getModel()) {
+            for (Task task : mainController.getModel()) {
                 checkTask(task);
             }
 
@@ -47,7 +44,7 @@ public class Notifier extends Controller implements Runnable {
             }
             else {
                 logger.info( "Task \"" + task.toString() + "\" should be executed!");
-                controller.throwMessage("\"" + task.getTitle() + "\" notification", "Task \"" + task.getTitle() + "\" should be executed!");
+                mainController.throwMessage("\"" + task.getTitle() + "\" notification", "Task \"" + task.getTitle() + "\" should be executed!");
             }
         }
     }
@@ -57,7 +54,7 @@ public class Notifier extends Controller implements Runnable {
                 System.out.println("Task " + task.getTitle() + " is finished, making unactive");
                 logger.info("Task \"" + task.toString() + "\" is finished, making unactive");
                 task.setActive(false);
-                controller.updateView();
+                mainController.updateView();
                 return true;
             } else return false;
     }

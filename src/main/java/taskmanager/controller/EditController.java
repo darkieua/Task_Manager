@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.ParseException;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
 
@@ -16,13 +17,13 @@ import java.util.Objects;
  * Created by darkie on 22.01.17.
  * Класс, отвечающий за поведение элементов в диалоговом окне изменения задания
  */
-public class EditController extends Controller {
+public class EditController extends MainController {
 
     private static Task task;
-    private Controller controller;
+    private MainController mainController;
 
-    public EditController (Controller controller) {
-        this.controller = controller;
+    public EditController (MainController mainController) {
+        this.mainController = mainController;
     }
 
     //Метод открывает новое диалоговое окно редактирования задачи (сама задача как аргумент метода)
@@ -31,7 +32,7 @@ public class EditController extends Controller {
             taskarg = new Task ("Task title", new Date());
         }
         task = taskarg;
-        EditDialog edit = new EditDialog(this.controller);
+        EditDialog edit = new EditDialog(this.mainController);
         edit.setEditedTaskIndex(index);
         setEditDialog(taskarg, edit);
         edit.pack();
@@ -45,12 +46,13 @@ public class EditController extends Controller {
             edit.getTitleField().setText(task.getTitle());
             if (task.isRepeated()) {
                 edit.setFormRepeated(true);
-                edit.getStartField().setText(Controller.dateFormat.format(task.getStartTime()));
-                edit.getEndField().setText(Controller.dateFormat.format(task.getEndTime()));
+
+                edit.getStartDatepicker().setDateTimePermissive(task.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                edit.getEndDatepicker().setDateTimePermissive(task.getEndTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
                 edit.getIntervalField().setText(Objects.toString(task.getRepeatInterval()));
             } else {
                 edit.setFormRepeated(false);
-                edit.getDateField().setText(Controller.dateFormat.format(task.getTime()));
+                edit.getDateDatepicker().setDateTimePermissive(task.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             }
             edit.getActiveCheckBox().setSelected(task.isActive());
             edit.getRepeatedCheckBox().setSelected(task.isRepeated());
@@ -84,38 +86,53 @@ public class EditController extends Controller {
             });
         }
 
-            //Вешается чекбокс на кнопку сохранения
-            //При нажатии, в текущую модель отправляется отредактированная задача
-            edit.getButtonSave().addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent actionEvent) {
-                    if (task != null) {
-                        task.setTitle(edit.getTitleField().getText());
-                        task.setActive(edit.getActiveCheckBox().isSelected());
-                        if (edit.getRepeatedCheckBox().isSelected()) {
-                            try {
-                                task.setTime(
-                                        Controller.dateFormat.parse(edit.getStartField().getText()),
-                                        Controller.dateFormat.parse(edit.getEndField().getText()),
-                                        new Integer(edit.getIntervalField().getText())
-                                );
-                            } catch (ParseException e) {
-                                //throwError(e.toString());
-                                controller.throwError("Date should be entered in format: dd-MM-yyyy HH:mm:ss.SSS");
-                                logger.error("Date should be entered in format: dd-MM-yyyy HH:mm:ss.SSS");
-                            }
+        //Вешается чекбокс на кнопку сохранения
+        //При нажатии, в текущую модель отправляется отредактированная задача
+        edit.getButtonSave().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (task != null) {
+                    task.setTitle(edit.getTitleField().getText());
+                    task.setActive(edit.getActiveCheckBox().isSelected());
+                    if (edit.getRepeatedCheckBox().isSelected()) {
+                        if (edit.getStartDatepicker().getDateTimePermissive() != null && edit.getEndDatepicker().getDateTimePermissive() != null && !edit.getIntervalField().getText().isEmpty()) {
+                            task.setTime(
+                                    new Date().from(edit.getStartDatepicker().getDateTimePermissive().atZone(ZoneId.systemDefault()).toInstant()),
+                                    new Date().from(edit.getEndDatepicker().getDateTimePermissive().atZone(ZoneId.systemDefault()).toInstant()),
+                                    new Integer(edit.getIntervalField().getText())
+                            );
+                            mainController.addNewTask(task);
+                            logger.info("Task \"" + task.toString() + "\" saved");
+                            edit.dispose();
                         } else {
-                            try {
-                                task.setTime(Controller.dateFormat.parse(edit.getDateField().getText()));
-                            } catch (ParseException e) {
-                                logger.error("Date should be entered in format: dd-MM-yyyy HH:mm:ss.SSS");
-                            }
+                            String errorMsg = "Tried to set an empty start or end date to repeated task";
+                            mainController.throwError(errorMsg);
+                            System.out.println(errorMsg);
+                            logger.error(errorMsg);
+                        }
+                    } else {
+                        if (edit.getDateDatepicker() != null) {
+                            task.setTime(new Date().from(edit.getDateDatepicker().getDateTimePermissive().atZone(ZoneId.systemDefault()).toInstant()));
+                            mainController.addNewTask(task);
+                            logger.info("Task \"" + task.toString() + "\" saved");
+                            edit.dispose();
+                        }
+                        else {
+                            String errorMsg = "Tried to set an empty execution date to  non-repeated task";
+                            mainController.throwError(errorMsg);
+                            System.out.println(errorMsg);
+                            logger.error(errorMsg);
                         }
                     }
-                    logger.info("Task \"" + task.toString() + "\" saved");
-                    //После изменения задачи, обновляется вид
-                    controller.updateView();
                 }
-            });
+            }
+        });
+
+        edit.getButtonCancel().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                edit.dispose();
+            }
+        });
     }
 }

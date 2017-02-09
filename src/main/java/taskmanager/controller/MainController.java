@@ -10,51 +10,33 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 /**
  * Created by darkie on 22.01.17.
  */
 
-public class Controller {
-    protected static Logger logger = Logger.getLogger(Controller.class);
+public class MainController {
+    protected static Logger logger = Logger.getLogger(MainController.class);
     private static String FILE_NAME = "list.bin";
     private MainFrame mainForm;
     private TaskList model;
 
-    private Controller controller;
+    private MainController mainController;
     private ToolbarController toolbar;
     private CalendarController calendar;
     private ListController list;
     private ConfirmExitDialogController confirmExit;
 
-    protected static SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
+    public static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy, HH:mm:ss");
 
-    public Controller () {
-
-    }
-
-    public void Init (Controller controller) {
-        this.controller = controller;
-        controller.setModel(controller.loadFromFile(controller.getFileName()));
-        controller.toolbar = new ToolbarController(controller);
-        controller.calendar = new CalendarController(controller);
-        controller.list = new ListController(controller);
-        controller.confirmExit = new ConfirmExitDialogController(controller);
-        controller.createView();
-    }
-
-    public TaskList loadFromFile(String filename) {
-        TaskList list = new ArrayTaskList();
-        try {
-            TaskIO.readBinary(list, new File(filename));
-            model.setSaved(true);
-        } catch (FileNotFoundException ex) {
-            logger.error("File not found");
-        } finally {
-            logger.info("Task list is being autoloaded from file");
-            return list;
-        }
+    public void Init (MainController mainController) {
+        this.mainController = mainController;
+        mainController.setModel(mainController.loadFromFile(new File(mainController.getFileName())));
+        mainController.toolbar = new ToolbarController(mainController);
+        mainController.calendar = new CalendarController(mainController);
+        mainController.list = new ListController(mainController);
+        mainController.confirmExit = new ConfirmExitDialogController(mainController);
+        mainController.createView();
     }
 
     public TaskList loadFromFile(File file) {
@@ -73,33 +55,27 @@ public class Controller {
 
     //Метод инициализации главного диалогового окна
     public void createView () {
-        controller.mainForm = new MainFrame();
-        controller.mainForm.pack();
-        controller.mainForm.setVisible(true);
-        controller.initControllers();
+        mainController.mainForm = new MainFrame();
+        mainController.mainForm.pack();
+        mainController.mainForm.setVisible(true);
+        mainController.initControllers();
     }
 
     private void initControllers() {
-        if (getModel() == null) {
-            System.out.println("Model is null");
-        }
-        controller.setExitOperationListener();
-        controller.toolbar.setEditButtonListener();
-        controller.toolbar.setRemoveButtonListener();
-        controller.toolbar.setAddButtonListener();
-        controller.toolbar.setLoadButtonListener();
-        controller.toolbar.setSaveButtonListener();
-        controller.calendar.createCalendar();
+        mainController.setExitOperationListener();
+        mainController.toolbar.setEditButtonListener();
+        mainController.toolbar.setRemoveButtonListener();
+        mainController.toolbar.setAddButtonListener();
+        mainController.toolbar.setLoadButtonListener();
+        mainController.toolbar.setSaveButtonListener();
+        mainController.calendar.createCalendar();
     }
 
     //Обновляет вид относительно актуальной модели
     public void updateView() {
-        if (controller == null) {
-            System.out.println("controller = null");
-        }
-        controller.mainForm.setModel(model);
-        controller.list.updateTaskArea(mainForm);
-        controller.toolbar.updateCombobox(mainForm.getTaskCombobox());
+        mainController.mainForm.setModel(model);
+        mainController.list.updateTaskArea(mainForm);
+        mainController.toolbar.updateCombobox(mainForm.getTaskCombobox());
     }
 
     protected void throwError(String msg) {
@@ -116,7 +92,7 @@ public class Controller {
     }
 
     protected void setExitOperationListener() {
-        controller.mainForm.addWindowListener(new WindowAdapter() {
+        mainController.mainForm.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 if (model.isSaved()) {
                     closeApplication();
@@ -128,24 +104,30 @@ public class Controller {
         });
     }
 
-    protected void closeApplication() {
-        controller.mainForm.dispose();
+    protected void closeApplication () {
+        mainController.mainForm.dispose();
         System.exit(0);
     }
-
     public String getFileName() {
         return FILE_NAME;
     }
 
     public void setModel(TaskList model) {
         try {
-            controller.model = model;
+            mainController.model = model;
         } catch (NullPointerException ex) {
-            if (controller == null) {
-                System.out.println("controller == null");
+            if (mainController == null) {
+                System.out.println("mainController == null");
             }
             //ex.printStackTrace();
         }
+    }
+
+    public void addNewTask(Task newTask) {
+        mainController.getModel().add(newTask);
+        mainController.getModel().setSaved(false);
+        toolbar.updateCombobox(mainController.getMainForm().getTaskCombobox());
+        mainController.updateView();
     }
 
     public TaskList getModel() {
