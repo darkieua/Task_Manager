@@ -14,7 +14,6 @@ public class Notifier extends MainController implements Runnable {
     private static boolean stop = false;
 
     private int MIN_CHECK = 1000; //Минимальное время, за которое возможна проверка
-    private int MIN_NOTIFY = 1000; //Минимальное время, за которое возможно оповещение
 
     public Notifier (MainController mainController) {
         this.mainController = mainController;
@@ -37,25 +36,19 @@ public class Notifier extends MainController implements Runnable {
 
     }
     private void checkTask (Task task) {
-        long timeleft = 0;
         if (task.isActive()) {
-            if (!isFinished(task)) {
-                timeleft = task.nextTimeAfter(new Date()).getTime() - System.currentTimeMillis();
+            if (task.isRepeated()) {
+                if (Math.abs(task.nextTimeAfter(new Date()).getTime() - System.currentTimeMillis()) < MIN_CHECK) {
+                    logger.info( "Task \"" + task.toString() + "\" should be executed!");
+                    mainController.throwMessage("\"" + task.getTitle() + "\" notification", "Task \"" + task.getTitle() + "\" should be executed!");
+                };
             }
             else {
-                logger.info( "Task \"" + task.toString() + "\" should be executed!");
-                mainController.throwMessage("\"" + task.getTitle() + "\" notification", "Task \"" + task.getTitle() + "\" should be executed!");
+                if (Math.abs(task.getTime().getTime() - System.currentTimeMillis()) < MIN_CHECK) {
+                    logger.info( "Task \"" + task.toString() + "\" should be executed!");
+                    mainController.throwMessage("\"" + task.getTitle() + "\" notification", "Task \"" + task.getTitle() + "\" should be executed!");
+                };
             }
         }
-    }
-
-    private boolean isFinished(Task task) {
-            if ((System.currentTimeMillis() > task.getTime().getTime() && !task.isRepeated()) || (System.currentTimeMillis() > task.getEndTime().getTime() && task.isRepeated())) {
-                System.out.println("Task " + task.getTitle() + " is finished, making unactive");
-                logger.info("Task \"" + task.toString() + "\" is finished, making unactive");
-                task.setActive(false);
-                mainController.updateView();
-                return true;
-            } else return false;
     }
 }

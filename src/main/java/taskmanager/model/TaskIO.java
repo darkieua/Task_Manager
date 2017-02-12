@@ -146,12 +146,12 @@ public class TaskIO {
     }
 
 
-    private static String intervalFormat (int input) {
+    public static String intervalFormat (long input) {
         input = input / 1000;
-        int numberOfDays = input / 86400;
-        int numberOfHours = (input % 86400 ) / 3600;
-        int numberOfMinutes = ((input % 86400 ) % 3600 ) / 60;
-        int numberOfSeconds = ((input % 86400 ) % 3600 ) % 60 ;
+        long  numberOfDays = input / 86400;
+        long  numberOfHours = (input % 86400 ) / 3600;
+        long  numberOfMinutes = ((input % 86400 ) % 3600 ) / 60;
+        long  numberOfSeconds = ((input % 86400 ) % 3600 ) % 60 ;
         String output = new String();
         if (numberOfDays > 0) {
             output += numberOfDays + " ";

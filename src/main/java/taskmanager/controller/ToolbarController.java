@@ -33,7 +33,7 @@ public class ToolbarController extends MainController {
         mainController.getMainForm().getButtonEdit().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (mainController.getModel().size() > 0) {
-                    edit.throwEditDialog(mainController.getModel().getTask(mainController.getMainForm().getTaskCombobox().getSelectedIndex()), mainController.getMainForm().getTaskCombobox().getSelectedIndex());
+                    edit.throwEditDialog(mainController.getModel().getTask(mainController.getMainForm().getTaskCombobox().getSelectedIndex()), false);
                     mainController.getModel().setSaved(false);
                     logger.info("Task \"" + mainController.getModel().getTask(mainController.getMainForm().getTaskCombobox().getSelectedIndex()).toString() + "\" is being edited");
                 }
@@ -70,7 +70,8 @@ public class ToolbarController extends MainController {
             public void actionPerformed(ActionEvent e) {
                 Task newTask = new Task("Title", new Date());
                 newTask.setActive(true);
-                edit.throwEditDialog(newTask, 0);
+                edit.throwEditDialog(newTask, true);
+                if (!edit.isCancelled()) mainController.addNewTask(newTask);
             }
         });
     }

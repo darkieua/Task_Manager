@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ErrorDialog extends JDialog {
+public class ErrorDialog extends Dialog {
     private int WINDOW_HEIGHT = 120;
     private int WINDOW_WEIGHT = 550;
 
@@ -40,11 +40,6 @@ public class ErrorDialog extends JDialog {
 
     public void setErrorLabelText(String msg) {
         ErrorLabel.setText(msg);
-    }
-
-    private void onOK() {
-        // add your code here
-        dispose();
     }
 
     {

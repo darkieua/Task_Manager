@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 
 public class MainController {
     protected static Logger logger = Logger.getLogger(MainController.class);
-    private static String FILE_NAME = "list.bin";
+    private static String FILE_NAME = "list.bin"; //Default name of save file
     private MainFrame mainForm;
     private TaskList model;
 
@@ -39,6 +39,7 @@ public class MainController {
         mainController.createView();
     }
 
+    //Method loads model from
     public TaskList loadFromFile(File file) {
         TaskList list = new ArrayTaskList();
         try {
@@ -53,7 +54,7 @@ public class MainController {
     }
 
 
-    //Метод инициализации главного диалогового окна
+    //Method creates main window of application
     public void createView () {
         mainController.mainForm = new MainFrame();
         mainController.mainForm.pack();
@@ -71,13 +72,14 @@ public class MainController {
         mainController.calendar.createCalendar();
     }
 
-    //Обновляет вид относительно актуальной модели
+    //Updates view relatively to the model
     public void updateView() {
         mainController.mainForm.setModel(model);
         mainController.list.updateTaskArea(mainForm);
         mainController.toolbar.updateCombobox(mainForm.getTaskCombobox());
     }
 
+    //Throws new error dialog window
     protected void throwError(String msg) {
         ErrorDialog errorForm = new ErrorDialog(this);
         errorForm.pack();
@@ -85,12 +87,14 @@ public class MainController {
         errorForm.setVisible(true);
     }
 
+    //Throw new dialog window with some message/information
     protected void throwMessage(String title, String msg) {
         MessageDialog mesageForm = new MessageDialog(this, title, msg);
         mesageForm.pack();
         mesageForm.setVisible(true);
     }
 
+    //Throws new exit confirmation dialog, if the model is not saved. If it is saved, closes the application ( closeApplication() ).
     protected void setExitOperationListener() {
         mainController.mainForm.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -104,14 +108,18 @@ public class MainController {
         });
     }
 
+    //Closes the application
     protected void closeApplication () {
         mainController.mainForm.dispose();
         System.exit(0);
     }
+
+    //Returns the name of save file
     public String getFileName() {
         return FILE_NAME;
     }
 
+    //Sets the model (tasklist) referenece in controller
     public void setModel(TaskList model) {
         try {
             mainController.model = model;
@@ -123,6 +131,7 @@ public class MainController {
         }
     }
 
+    //Adds new task to the model, referenced in controller
     public void addNewTask(Task newTask) {
         mainController.getModel().add(newTask);
         mainController.getModel().setSaved(false);
@@ -130,10 +139,12 @@ public class MainController {
         mainController.updateView();
     }
 
+    //Returns the model (tasklist) referenced in controller
     public TaskList getModel() {
         return model;
     }
 
+    //Returns the reference to the instance of main window of application
     public MainFrame getMainForm() {
         return mainForm;
     }

@@ -17,6 +17,7 @@ import java.util.*;
  */
 public class CalendarController extends MainController {
 
+    private final int MAX_TASKS_SHOWN = 500; //Maximum amount of tasks, which can be shown in calendar;
     private MainController mainController;
     private long fromTimeMillis;
     private long tillTimeMillis;
@@ -70,15 +71,20 @@ public class CalendarController extends MainController {
         String calendarStr = new String();
 
         SortedMap<Date, Set<Task>> map = Tasks.calendar(mainController.getModel(), new Date(fromTimeMillis), new Date(tillTimeMillis));
-
-        for (Date key : map.keySet()) {
+        int count = 0;
+        outerloop: for (Date key : map.keySet()) {
             calendarStr += MainController.dateFormat.format(key) + ": ";
+            count++;
             for (Task t : map.get(key)) {
                 calendarStr += "\"" + t.getTitle() + "\" ";
+                if (count > MAX_TASKS_SHOWN) {
+                    mainController.throwError("Too much tasks on this period! First " + MAX_TASKS_SHOWN + " are shown.");
+                    break outerloop;
+                }
             }
             calendarStr += "\n";
         }
 
-        mainController.getMainForm().getCalendarArea().setText(calendarStr);
+       mainController.getMainForm().getCalendarArea().setText(calendarStr);
     }
 }

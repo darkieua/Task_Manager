@@ -90,7 +90,9 @@ public class Tasks {
 
         for (Task task : incomingTasks) {
             if (task.isRepeated()) {
+                int count = 0;
                 for (Date date = task.nextTimeAfter(start); !date.after(end); date = new Date (date.getTime() + task.getRepeatInterval())) {
+                    //System.out.println(date.toString());
                     if (map.get(date) == null) {
                         map.put(date, new HashSet<>());
                         map.get(date).add(task);

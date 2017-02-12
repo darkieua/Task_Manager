@@ -3,10 +3,7 @@ package taskmanager.controller;
 import taskmanager.model.Task;
 import taskmanager.view.EditDialog;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.text.ParseException;
 import java.time.ZoneId;
 import java.util.Date;
@@ -19,21 +16,16 @@ import java.util.Objects;
  */
 public class EditController extends MainController {
 
-    private static Task task;
     private MainController mainController;
+    private boolean cancelled;
 
     public EditController (MainController mainController) {
         this.mainController = mainController;
     }
 
     //Метод открывает новое диалоговое окно редактирования задачи (сама задача как аргумент метода)
-    protected void throwEditDialog (Task taskarg, int index) {
-        if (taskarg == null) {
-            taskarg = new Task ("Task title", new Date());
-        }
-        task = taskarg;
-        EditDialog edit = new EditDialog(this.mainController);
-        edit.setEditedTaskIndex(index);
+    protected void throwEditDialog (Task taskarg, boolean isNewTask) {
+        EditDialog edit = new EditDialog(this.mainController, isNewTask ? "Add task" : "Edit task");
         setEditDialog(taskarg, edit);
         edit.pack();
         edit.setVisible(true);
@@ -42,6 +34,7 @@ public class EditController extends MainController {
     //Метод задает соответствие между элементами формы редактирования и данными из объекта задачи
     protected void setEditDialog(Task task, EditDialog edit) {
         if (task != null) {
+            edit.setEditCombobox();
             edit.setEditedTask(task);
             edit.getTitleField().setText(task.getTitle());
             if (task.isRepeated()) {
@@ -64,10 +57,10 @@ public class EditController extends MainController {
                 @Override
                 public void itemStateChanged(ItemEvent itemEvent) {
                     if (edit.getRepeatedCheckBox().isSelected()) {
-                        edit.getEditedTask().setActive(true);
+                        task.setActive(true);
                         edit.setFormRepeated(true);
                     } else {
-                        edit.getEditedTask().setActive(false);
+                        task.setActive(false);
                         edit.setFormRepeated(false);
                     }
                 }
@@ -85,13 +78,13 @@ public class EditController extends MainController {
                 }
             });
         }
-
         //Вешается чекбокс на кнопку сохранения
         //При нажатии, в текущую модель отправляется отредактированная задача
         edit.getButtonSave().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (task != null) {
+                    int interval = intervalComboboxMultiplier(edit, Integer.valueOf(edit.getIntervalField().getText()));
                     task.setTitle(edit.getTitleField().getText());
                     task.setActive(edit.getActiveCheckBox().isSelected());
                     if (edit.getRepeatedCheckBox().isSelected()) {
@@ -99,9 +92,8 @@ public class EditController extends MainController {
                             task.setTime(
                                     new Date().from(edit.getStartDatepicker().getDateTimePermissive().atZone(ZoneId.systemDefault()).toInstant()),
                                     new Date().from(edit.getEndDatepicker().getDateTimePermissive().atZone(ZoneId.systemDefault()).toInstant()),
-                                    new Integer(edit.getIntervalField().getText())
-                            );
-                            mainController.addNewTask(task);
+                                    interval);
+                            mainController.updateView();
                             logger.info("Task \"" + task.toString() + "\" saved");
                             edit.dispose();
                         } else {
@@ -113,7 +105,7 @@ public class EditController extends MainController {
                     } else {
                         if (edit.getDateDatepicker() != null) {
                             task.setTime(new Date().from(edit.getDateDatepicker().getDateTimePermissive().atZone(ZoneId.systemDefault()).toInstant()));
-                            mainController.addNewTask(task);
+                            mainController.updateView();
                             logger.info("Task \"" + task.toString() + "\" saved");
                             edit.dispose();
                         }
@@ -124,6 +116,7 @@ public class EditController extends MainController {
                             logger.error(errorMsg);
                         }
                     }
+                    cancelled = false;
                 }
             }
         });
@@ -131,8 +124,39 @@ public class EditController extends MainController {
         edit.getButtonCancel().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                edit.dispose();
+                exitWithoutSave(edit);
             }
         });
+
+        edit.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                exitWithoutSave(edit);
+            }
+        });
+    }
+
+    private void exitWithoutSave (EditDialog edit) {
+        cancelled = true;
+        edit.dispose();
+    }
+    private int intervalComboboxMultiplier(EditDialog edit, int originalTime) {
+        String selectedTimeUnit = edit.getIntervalCombobox().getSelectedItem().toString();
+        if (selectedTimeUnit.equals("ms")) {
+            return originalTime;
+        }
+        else if (selectedTimeUnit.equals("s")) {
+            return originalTime * 1000;
+        }
+        else if (selectedTimeUnit.equals("m")) {
+            return originalTime * 1000 * 60;
+        }
+        else if (selectedTimeUnit.equals("h")) {
+            return originalTime * 1000 * 60 * 60;
+        }
+        else return originalTime;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
     }
 }
