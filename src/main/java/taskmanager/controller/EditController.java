@@ -84,11 +84,11 @@ public class EditController extends MainController {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (task != null) {
-                    int interval = intervalComboboxMultiplier(edit, Integer.valueOf(edit.getIntervalField().getText()));
                     task.setTitle(edit.getTitleField().getText());
                     task.setActive(edit.getActiveCheckBox().isSelected());
                     if (edit.getRepeatedCheckBox().isSelected()) {
                         if (edit.getStartDatepicker().getDateTimePermissive() != null && edit.getEndDatepicker().getDateTimePermissive() != null && !edit.getIntervalField().getText().isEmpty()) {
+                            int interval = intervalComboboxMultiplier(edit, Integer.valueOf(edit.getIntervalField().getText()));
                             task.setTime(
                                     new Date().from(edit.getStartDatepicker().getDateTimePermissive().atZone(ZoneId.systemDefault()).toInstant()),
                                     new Date().from(edit.getEndDatepicker().getDateTimePermissive().atZone(ZoneId.systemDefault()).toInstant()),
