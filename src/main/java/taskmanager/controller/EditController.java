@@ -42,7 +42,7 @@ public class EditController extends MainController {
 
                 edit.getStartDatepicker().setDateTimePermissive(task.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
                 edit.getEndDatepicker().setDateTimePermissive(task.getEndTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-                edit.getIntervalField().setText(Objects.toString(task.getRepeatInterval()));
+                edit.getIntervalField().setText(Objects.toString(task.getRepeatInterval() * 1000));
             } else {
                 edit.setFormRepeated(false);
                 edit.getDateDatepicker().setDateTimePermissive(task.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());

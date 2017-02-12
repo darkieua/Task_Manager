@@ -36,18 +36,25 @@ public class Notifier extends MainController implements Runnable {
 
     }
     private void checkTask (Task task) {
-        if (task.isActive()) {
-            if (task.isRepeated()) {
-                if (Math.abs(task.nextTimeAfter(new Date()).getTime() - System.currentTimeMillis()) < MIN_CHECK) {
-                    logger.info( "Task \"" + task.toString() + "\" should be executed!");
-                    mainController.throwMessage("\"" + task.getTitle() + "\" notification", "Task \"" + task.getTitle() + "\" should be executed!");
-                };
-            }
-            else {
-                if (Math.abs(task.getTime().getTime() - System.currentTimeMillis()) < MIN_CHECK) {
-                    logger.info( "Task \"" + task.toString() + "\" should be executed!");
-                    mainController.throwMessage("\"" + task.getTitle() + "\" notification", "Task \"" + task.getTitle() + "\" should be executed!");
-                };
+        if (task != null) {
+            try {
+                if (task.isActive()) {
+                    if (task.isRepeated()) {
+                        if (Math.abs(task.nextTimeAfter(new Date()).getTime() - System.currentTimeMillis()) < MIN_CHECK) {
+                            logger.info("Task \"" + task.toString() + "\" should be executed!");
+                            mainController.throwMessage("\"" + task.getTitle() + "\" notification", "Task \"" + task.getTitle() + "\" should be executed!");
+                        }
+                    } else {
+                        if (Math.abs(task.getTime().getTime() - System.currentTimeMillis()) < MIN_CHECK) {
+                            logger.info("Task \"" + task.toString() + "\" should be executed!");
+                            mainController.throwMessage("\"" + task.getTitle() + "\" notification", "Task \"" + task.getTitle() + "\" should be executed!");
+                        }
+                        ;
+                    }
+                }
+            } catch (NullPointerException ex) {
+                task.setActive(false);
+                mainController.updateView();
             }
         }
     }

@@ -68,8 +68,8 @@ public class EditDialog extends Dialog {
     }
 
     public void setEditCombobox() {
-        String[] timeUnits = {"ms", "s", "m", "h"};
-        int DEFAULT_TIMEUNIT = 2; //Index of selected by default time unit
+        String[] timeUnits = {"s", "m", "h"};
+        int DEFAULT_TIMEUNIT = 0; //Index of selected by default time unit
         for (String timeUnit : timeUnits) {
             this.getIntervalCombobox().addItem(timeUnit);
         }
