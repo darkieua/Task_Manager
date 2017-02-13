@@ -1,17 +1,18 @@
 package taskmanager.view;
 
+import com.github.lgooddatepicker.components.DateTimePicker;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import taskmanager.controller.Controller;
+import taskmanager.controller.MainController;
 import taskmanager.model.Task;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class EditDialog extends JDialog {
-    private Controller controller;
+public class EditDialog extends Dialog {
+    private MainController mainController;
 
     private int WINDOW_HEIGHT = 250;
     private int WINDOW_WEIGHT = 400;
@@ -20,10 +21,7 @@ public class EditDialog extends JDialog {
     private JButton buttonSave;
     private JButton buttonCancel;
     private JTextField titleField;
-    private JTextField dateField;
     private JLabel dateLabel;
-    private JTextField startField;
-    private JTextField endField;
     private JTextField intervalField;
     private JLabel startLabel;
     private JLabel endLabel;
@@ -33,9 +31,12 @@ public class EditDialog extends JDialog {
     private JPanel checkBoxes;
     private JPanel Fields;
     private JLabel titleLabel;
+    private DateTimePicker dateDatepicker;
+    private DateTimePicker startDatepicker;
+    private DateTimePicker endDatepicker;
+    private JComboBox intervalCombobox;
 
     private Task editedTask;
-    private int editedTaskIndex;
 
 
     public void setEditedTask(Task editedTask) {
@@ -46,34 +47,33 @@ public class EditDialog extends JDialog {
         return editedTask;
     }
 
-    public void setEditedTaskIndex(int editedTaskIndex) {
-        this.editedTaskIndex = editedTaskIndex;
-    }
-
-    public int getEditedTaskIndex() {
-        return editedTaskIndex;
-    }
-
     public void setFormRepeated(boolean repeated) {
         if (repeated) {
-            //Для избегания вероятной ошибки при пустых полях с датами начала, конца и интервала, в эти поля копируется значения из формы с датой исполнения,
-            //а в поле интервала копируется дефолтное значение - 1000
-            startField.setText(dateField.getText());
-            endField.setText(dateField.getText());
-            intervalField.setText("1000");
-
+            intervalField.setText("1");
             //Поля с датами начала, конца и интервала делаются доступными для редактирования, поле с датой исполнения - недоступным
-            startField.setEditable(true);
-            endField.setEditable(true);
+            startDatepicker.setEnabled(true);
+            endDatepicker.setEnabled(true);
             intervalField.setEditable(true);
-            dateField.setEditable(false);
+            intervalCombobox.setEnabled(true);
+            dateDatepicker.setEnabled(false);
         } else {
             //Поля с датой исполнения доступное для редактирования, поля с датами начала, конца и интервала - нет
-            startField.setEditable(false);
-            endField.setEditable(false);
+            startDatepicker.setEnabled(false);
+            endDatepicker.setEnabled(false);
             intervalField.setEditable(false);
-            dateField.setEditable(true);
+            intervalCombobox.setEnabled(false);
+            dateDatepicker.setEnabled(true);
         }
+
+    }
+
+    public void setEditCombobox() {
+        String[] timeUnits = {"s", "m", "h"};
+        int DEFAULT_TIMEUNIT = 0; //Index of selected by default time unit
+        for (String timeUnit : timeUnits) {
+            this.getIntervalCombobox().addItem(timeUnit);
+        }
+        this.getIntervalCombobox().setSelectedItem(DEFAULT_TIMEUNIT);
     }
 
 
@@ -89,18 +89,6 @@ public class EditDialog extends JDialog {
         return titleField;
     }
 
-    public JTextField getDateField() {
-        return dateField;
-    }
-
-    public JTextField getStartField() {
-        return startField;
-    }
-
-    public JTextField getEndField() {
-        return endField;
-    }
-
     public JTextField getIntervalField() {
         return intervalField;
     }
@@ -113,27 +101,31 @@ public class EditDialog extends JDialog {
         return repeatedCheckBox;
     }
 
-    public EditDialog(Controller controller) {
-        super(controller.getMainForm(), "Edit task");
-        this.controller = controller;
+    public DateTimePicker getDateDatepicker() {
+        return dateDatepicker;
+    }
+
+    public DateTimePicker getStartDatepicker() {
+        return startDatepicker;
+    }
+
+    public DateTimePicker getEndDatepicker() {
+        return endDatepicker;
+    }
+
+    public JComboBox getIntervalCombobox() {
+        return intervalCombobox;
+    }
+
+    public EditDialog(MainController mainController, String dialogTitle) {
+        super(mainController.getMainForm(), dialogTitle);
+        this.mainController = mainController;
         setModal(true);
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonSave);
         setResizable(false);
         setPreferredSize(new Dimension(WINDOW_WEIGHT, WINDOW_HEIGHT));
         setLocationRelativeTo(null);
-
-        buttonSave.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
-
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        });
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -151,15 +143,6 @@ public class EditDialog extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private void onOK() {
-        // add your code here
-        dispose();
-    }
-
-    private void onCancel() {
-        // add your code here if necessary
-        dispose();
-    }
 
     {
 // GUI initializer generated by IntelliJ IDEA GUI Designer
@@ -193,12 +176,10 @@ public class EditDialog extends JDialog {
         buttonCancel.setText("Cancel");
         panel2.add(buttonCancel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         Fields = new JPanel();
-        Fields.setLayout(new GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
+        Fields.setLayout(new GridLayoutManager(5, 3, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(Fields, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         titleField = new JTextField();
         Fields.add(titleField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        dateField = new JTextField();
-        Fields.add(dateField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         dateLabel = new JLabel();
         dateLabel.setText("Date");
         Fields.add(dateLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -211,15 +192,19 @@ public class EditDialog extends JDialog {
         intervalLabel = new JLabel();
         intervalLabel.setText("Interval");
         Fields.add(intervalLabel, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        startField = new JTextField();
-        Fields.add(startField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        endField = new JTextField();
-        Fields.add(endField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         intervalField = new JTextField();
         Fields.add(intervalField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         titleLabel = new JLabel();
         titleLabel.setText("Title");
         Fields.add(titleLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        dateDatepicker = new DateTimePicker();
+        Fields.add(dateDatepicker, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        startDatepicker = new DateTimePicker();
+        Fields.add(startDatepicker, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        endDatepicker = new DateTimePicker();
+        Fields.add(endDatepicker, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        intervalCombobox = new JComboBox();
+        Fields.add(intervalCombobox, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxes = new JPanel();
         checkBoxes.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(checkBoxes, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

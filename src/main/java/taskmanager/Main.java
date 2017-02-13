@@ -1,6 +1,6 @@
 package taskmanager;
 
-import taskmanager.controller.Controller;
+import taskmanager.controller.MainController;
 import taskmanager.controller.Notifier;
 import org.apache.log4j.Logger;
 
@@ -12,11 +12,11 @@ public class Main {
     public static Logger logger = Logger.getLogger(Main.class);
     public static void main(String[] args) {
         logger.info("TaskManager application started");
-        Controller controller = new Controller();
-        controller.Init(controller);
-        controller.updateView();
+        MainController mainController = new MainController();
+        mainController.Init(mainController);
+        mainController.updateView();
 
-        Notifier notifier = new Notifier(controller);
+        Notifier notifier = new Notifier(mainController);
         notifier.run();
     }
 }

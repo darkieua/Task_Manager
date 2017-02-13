@@ -1,65 +1,90 @@
 package taskmanager.controller;
 
+import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DateTimePicker;
+import com.github.lgooddatepicker.components.TimePicker;
 import taskmanager.model.Task;
 import taskmanager.model.Tasks;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.ParseException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
  * Created by darkie on 22.01.17.
  */
-public class CalendarController extends Controller {
+public class CalendarController extends MainController {
 
-    private Controller controller;
+    private final int MAX_TASKS_SHOWN = 500; //Maximum amount of tasks, which can be shown in calendar;
+    private MainController mainController;
+    private long fromTimeMillis;
+    private long tillTimeMillis;
 
-    public CalendarController (Controller controller) {
-        this.controller = controller;
+    public CalendarController (MainController mainController) {
+        this.mainController = mainController;
     }
 
     protected void createCalendar() {
-        controller.getMainForm().getFromField().setText(Controller.dateFormat.format(new Date(0)));
-        controller.getMainForm().getTillField().setText(Controller.dateFormat.format(new Date(new Date().getTime() * 2)));
-        controller.getMainForm().getApplyButton().addActionListener(new ActionListener() {
+        //From and Till DateTimePickers
+        DateTimePicker fromDateTimePicker = mainController.getMainForm().getFromDatePicker();
+        DateTimePicker tillDateTimePicker = mainController.getMainForm().getTillDatePicker();
+
+        //From DatePicker and TimePicker
+        DatePicker fromDatePicker = fromDateTimePicker.getDatePicker();
+        TimePicker fromTimePicker = fromDateTimePicker.getTimePicker();
+
+        //Till DatePicker and TimePicker
+        DatePicker tillDatePicker = tillDateTimePicker.getDatePicker();
+        TimePicker tillTimePicker = tillDateTimePicker.getTimePicker();
+
+        mainController.getMainForm().getApplyButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                try {
-                    controller.dateFormat.parse(controller.getMainForm().getFromField().getText());
-                    controller.dateFormat.parse(controller.getMainForm().getFromField().getText());
-                } catch (ParseException e) {
-                    controller.throwError("Wrong date input");
-                    logger.error("Wrong date input");
-                } finally {
-                    updateCalendar();
+                if (fromDatePicker.getDate() != null && fromTimePicker.getTime() != null && tillDatePicker.getDate() != null && tillTimePicker.getTime() != null) {
+                    long offset = TimeZone.getDefault().getOffset(new Date().getTime()); //Local timezone offset
+                    fromTimeMillis = (fromDatePicker.getDate().toEpochDay() * 86400 * 1000) + (fromTimePicker.getTime().toSecondOfDay() * 1000) - offset;
+                    tillTimeMillis = (tillDatePicker.getDate().toEpochDay() * 86400 * 1000) + (tillTimePicker.getTime().toSecondOfDay() * 1000) - offset;
+
+                    if (fromTimeMillis > tillTimeMillis) {
+                        mainController.logger.error("\"Till\" date can not be more than \"From\"");
+                        mainController.throwError("\"Till\" date can not be more than \"From\"");
+                    }
+                    else {
+                        DateFormat gmtFormat = new SimpleDateFormat();
+                        System.out.println();
+                        System.out.println("From: " + fromTimeMillis + ", " + gmtFormat.format(new Date(fromTimeMillis)));
+                        System.out.println("Till: " + tillTimeMillis + ", " + gmtFormat.format(new Date(tillTimeMillis)));
+                        updateCalendar();
+                    }
+                }
+                else {
+                    mainController.logger.error("Date is not set correctly");
+                    mainController.throwError("Date is not set correctly");
                 }
             }
         });
     }
 
     protected void updateCalendar() {
-
         String calendarStr = new String();
-        try {
-            SortedMap<Date, Set<Task>> map = Tasks.calendar(
-                    controller.getModel(),
-                    controller.dateFormat.parse(controller.getMainForm().getFromField().getText()),
-                    controller.dateFormat.parse(controller.getMainForm().getTillField().getText())
-            );
 
-            for (Date key : map.keySet()) {
-                calendarStr += Controller.dateFormat.format(key) + ": ";
-                for (Task t : map.get(key)) {
-                   calendarStr += "\"" + t.getTitle() + "\" ";
+        SortedMap<Date, Set<Task>> map = Tasks.calendar(mainController.getModel(), new Date(fromTimeMillis), new Date(tillTimeMillis));
+        int count = 0;
+        outerloop: for (Date key : map.keySet()) {
+            calendarStr += MainController.dateFormat.format(key) + ": ";
+            count++;
+            for (Task t : map.get(key)) {
+                calendarStr += "\"" + t.getTitle() + "\" ";
+                if (count > MAX_TASKS_SHOWN) {
+                    mainController.throwError("Too much tasks on this period! First " + MAX_TASKS_SHOWN + " are shown.");
+                    break outerloop;
                 }
-                calendarStr += "\n";
             }
-
-            controller.getMainForm().getCalendarArea().setText(calendarStr);
-        } catch (ParseException e) {
-            controller.throwError("Wrong date input");
-            logger.error("Wrong date input");
+            calendarStr += "\n";
         }
+
+       mainController.getMainForm().getCalendarArea().setText(calendarStr);
     }
 }

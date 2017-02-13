@@ -3,23 +3,21 @@ package taskmanager.view;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import taskmanager.controller.Controller;
+import taskmanager.controller.MainController;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MessageDialog extends JDialog {
+public class MessageDialog extends Dialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JLabel messageLabel;
 
-    private Controller controller;
-
-    public MessageDialog(Controller controller, String title, String message) {
-        super(controller.getMainForm(), title);
-        this.controller = controller;
+    public MessageDialog(MainController mainController, String title, String message) {
+        super(mainController.getMainForm(), title);
+        this.mainController = mainController;
         setContentPane(contentPane);
         setModal(false);
         getRootPane().setDefaultButton(buttonOK);
@@ -30,11 +28,6 @@ public class MessageDialog extends JDialog {
                 onOK();
             }
         });
-    }
-
-    private void onOK() {
-        // add your code here
-        dispose();
     }
 
     {

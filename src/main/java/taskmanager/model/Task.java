@@ -1,5 +1,7 @@
 package taskmanager.model;
 
+import taskmanager.controller.MainController;
+
 import java.util.Date;
 
 /**
@@ -71,7 +73,7 @@ public class Task implements Cloneable{
     }
 
     public long getRepeatInterval () {
-        return repeated ? this.interval : null;
+        return repeated ? this.interval : -1;
     }
 
     public void setTime (Date start, Date end, int interval) {
@@ -100,28 +102,6 @@ public class Task implements Cloneable{
             return null;
         }
     }
-
-    /*
-    public Date nextTimeAfter (Date current) {
-        if (isActive()) {
-            if (isRepeated()) {
-                Date next = getStartTime();
-                if (next.before(getStartTime())) return getStartTime();
-                else if (next.after(getEndTime())) return null;
-                else {
-                    while (!next.after(current)) {
-                        next = new Date(next.getTime() + getRepeatInterval());
-                        System.out.println(next.toString());
-                    }
-                    return next;
-                }
-            } else {
-                if (!current.after(time)) return time;
-            }
-        }
-        return null;
-    }
-    */
 
     public boolean isRepeated () {
         return this.repeated;
@@ -164,10 +144,10 @@ public class Task implements Cloneable{
     public String toString() {
         String result;
         if (isRepeated()) {
-            result = "\"" + getTitle() + "\" from " + getStartTime() + " to " + getEndTime() + " in " + getRepeatInterval() + (isActive() ? " active" : "");
+            result = "\"" + getTitle() + "\" from [" + MainController.dateFormat.format(getStartTime()) + "] to [" + MainController.dateFormat.format(getEndTime()) + "] every " + TaskIO.intervalFormat(getRepeatInterval()) + (isActive() ? " active" : "");
         }
         else
-            result = "\"" + getTitle() + "\" at " + getTime() + (isActive() ? " active" : "");
+            result = "\"" + getTitle() + "\" at [" + MainController.dateFormat.format(getTime()) + (isActive() ? "] active" : "]");
         return result;
     }
 }

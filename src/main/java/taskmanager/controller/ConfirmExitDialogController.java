@@ -8,18 +8,18 @@ import java.awt.event.ActionListener;
 /**
  * Created by darkie on 29.01.17.
  */
-public class ConfirmExitDialogController extends Controller {
+public class ConfirmExitDialogController extends MainController {
 
-    private Controller controller;
+    private MainController mainController;
     private ToolbarController toolbar;
 
-    public ConfirmExitDialogController (Controller controller) {
-        this.controller = controller;
-        this.toolbar = new ToolbarController(this.controller);
+    public ConfirmExitDialogController (MainController mainController) {
+        this.mainController = mainController;
+        this.toolbar = new ToolbarController(this.mainController);
     }
 
     public void throwConfirmExitDialog() {
-        ConfirmExitDialog exit = new ConfirmExitDialog(this.controller);
+        ConfirmExitDialog exit = new ConfirmExitDialog(this.mainController);
         setCancelButtonListener(exit);
         setDontSaveButtonListener(exit);
         setSaveButtonListener(exit);
@@ -33,7 +33,7 @@ public class ConfirmExitDialogController extends Controller {
             public void actionPerformed(ActionEvent actionEvent) {
                 toolbar.saveButtonHandler();
                 logger.info("Application closed with saving");
-                controller.closeApplication();
+                mainController.closeApplication();
             }
         });
     }
@@ -43,7 +43,7 @@ public class ConfirmExitDialogController extends Controller {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 logger.info("Application closed without saving");
-                controller.closeApplication();
+                mainController.closeApplication();
             }
         });
     }
